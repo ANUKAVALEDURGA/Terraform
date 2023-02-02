@@ -473,7 +473,10 @@ By separating the definition and the assignment of the variables, it allows to k
 Terraform refresh 
 	- Terraform refresh will find the updates done in the cloud resources by comparing the changes with state file.	
 	- This won't modify your real remote objects, but it will modify the the Terraform state.
-
+[ terraform refresh is useful when you want to bring your Terraform state file up to date after making changes to your infrastructure outside 
+of Terraform (for example, manually modifying a resource through the AWS Console). By running terraform refresh, you can ensure that your Terraform 
+state file accurately reflects the current state of your infrastructure, so that subsequent Terraform operations (such as terraform plan or terraform apply) 
+will be based on accurate information. ]
 
 Terraform import  (Importing existing aws resource to terraform)
 	- we are using terraforming tool in our company to import the existing configurations. 
@@ -481,17 +484,39 @@ Terraform import  (Importing existing aws resource to terraform)
 		(https://github.com/dtan4/terraforming)		
 			sudo yum install rubygems
 			sudo gem install terraforming
-[ The terraform import command is used to import existing resources into a Terraform state. This allows you to take existing resources that were created outside of Terraform and manage them with Terraform.The basic syntax for the terraform import command is as follows:
+[ The terraform import command is used to import existing resources into a Terraform state. This allows you to take existing resources that were 
+created outside of Terraform and manage them with Terraform.The basic syntax for the terraform import command is as follows:
 terraform import [options] <resource address> <resource ID>
-The resource address is the address of the resource in the Terraform configuration file, and the resource ID is the ID of the existing resource that you want to import.
+The resource address is the address of the resource in the Terraform configuration file, and the resource ID is the ID of the existing resource that 
+you want to import.
 For example, if you have an existing AWS S3 bucket with the ID "my-bucket", and you want to import that bucket into Terraform, you would run the following command
 terraform import aws_s3_bucket.example my-bucket
 
-This would import the "my-bucket" S3 bucket into Terraform, and create a new state file that includes the S3 bucket as a managed resource. From then on, Terraform will recognize the bucket as a managed resource, and you can use Terraform to update, delete, or track changes to the resource.
+This would import the "my-bucket" S3 bucket into Terraform, and create a new state file that includes the S3 bucket as a managed resource. From then on, 
+Terraform will recognize the bucket as a managed resource, and you can use Terraform to update, delete, or track changes to the resource.
 In summary, terraform import is a feature of Terraform and it requires the terraform tool to be installed, 
 it also needs a corresponding configuration file and access to the resources. ]
 
 Terraform loops (count and for_each)	
+
+[ Terraform supports loops through the use of its "count" argument and the "for_each" argument in HashiCorp Configuration Language (HCL). 
+These arguments allow you to create multiple instances of a resource or module based on the values in a list or map. 
+
+In programming, a list is an ordered collection of elements. Lists in Terraform can contain any type of data, including numbers, strings, 
+booleans, or other lists. Lists are defined in Terraform using square brackets, with each element separated by a comma. For example:
+
+list = [1, 2, 3, 4]
+A map, also known as a dictionary or hash table, is a collection of key-value pairs. In Terraform, maps can contain any type of data, including 
+lists or other maps. Maps are defined in Terraform using curly braces, with each key-value pair separated by a comma. For example:
+
+map = {
+  key1 = "value1"
+  key2 = "value2"
+}
+Both lists and maps are useful data structures in Terraform, and can be used to store and organize information in a variety of ways. For example, you could use a 
+map to store the configuration of a set of resources, and then use the for_each argument in Terraform to create instances of those resources based on the values 
+in the map. ]
+
 	resource "null_resource" "loop_simple" {
 		count = 2 
 	}
@@ -500,6 +525,17 @@ Terraform loops (count and for_each)
 		value = null_resource.loop_simple
 	}
 	
+[ This Terraform code creates two instances of a "null_resource" resource and outputs a list of those instances.
+
+The count argument for the null_resource resource is set to 2, which means Terraform will create two instances of the resource. 
+The instances will be named "loop_simple.0" and "loop_simple.1".
+
+The output block creates an output variable named "loop_out" that refers to the list of instances of the null_resource resource. 
+The value of this output variable will be a list of two instances of the null_resource resource, one for each count.
+
+This example demonstrates how to use the count argument in Terraform to create multiple instances of a resource and how to output the list of instances. 
+Note that the "null_resource" resource is a special type of resource in Terraform that does not create any real resources, but is useful for testing and 
+demonstration purposes. ]
 	
 	List count example
 	
@@ -519,12 +555,28 @@ Terraform loops (count and for_each)
 	}
 	
 	
+[ This Terraform code uses a local block to define a list of strings, names, containing the names of four buckets.
+
+Then, it creates a null_resource resource with a count argument set to the length of the names list, which is 4. This means Terraform will create four 
+instances of the null_resource resource.
+
+The triggers argument for the null_resource resource uses the count.index expression to assign a different value from the names list to each instance of the resource.
+example: name = local.names[0] means bucket1 , count.index is 1 means bucket2 and so on
+
+Finally, the output block creates an output variable named "list_out" that refers to the list of instances of the null_resource resource. 
+The value of this output variable will be a list of four instances of the null_resource, each with a different name assigned to the triggers.name attribute.
+
+This example demonstrates how to use a local block to store a list of values and how to use the count argument to create multiple instances of a resource, 
+where each instance has different attributes. It also demonstrates how to output a list of instances of a resource. ]
+	
 	List for_each example
 	
 	locals {
 		names = ["bucket1","bucket2","bucket3","bucket4"]
 	}
 	
+
+
 	resource "null_resource" "names" {
 		for_each = toset(local.names)
 		triggers = {
@@ -536,6 +588,28 @@ Terraform loops (count and for_each)
 		value = null_resource.names
 	}
 	
+	
+[ This Terraform code uses a local block to define a list of strings, names, containing the names of four buckets.
+
+Then, it creates a null_resource resource with a for_each argument set to the result of the toset function applied to the names list. The toset function 
+converts a list to a set, which is a data structure that does not allow duplicate values.
+The triggers argument for the null_resource resource uses the each.value expression to assign a different value from the names list to each instance of the resource.
+Finally, the output block creates an output variable named "list_out" that refers to the list of instances of the null_resource resource. 
+The value of this output variable will be a list of four instances of the null_resource, each with a different name assigned to the triggers.name attribute.
+This example demonstrates how to use the for_each argument in Terraform to create multiple instances of a resource, where each instance has different 
+attributes, and how to use the toset function to eliminate duplicates from a list. It also demonstrates how to output a list of instances of a resource.
+
+The line triggers = { name = each.value } in Terraform sets the value of the triggers argument for a null_resource resource.
+The triggers argument is used to define values that will trigger a re-creation of the resource. In this case, the value of 
+the name key in the triggers map is set to each.value.
+The expression each.value is a special expression in Terraform that is only available when using the for_each argument. It refers to the current 
+value in the set being iterated over by the for_each argument.
+This example demonstrates how to use the for_each and each.value expressions in Terraform to create multiple instances of a resource, where each instance 
+has different attributes, and how to use the triggers argument to define values that will trigger a re-creation of the resource.  ]
+
+
+
+
 	Map for_each example
 	
 	locals {
@@ -559,7 +633,11 @@ Terraform loops (count and for_each)
 		value = null_resource.names
 	}
 
-
+This code does not actually trigger any actions, it only sets "triggers" on the null resource "names". Triggers in Terraform are used to re-run a 
+resource when its properties change, which in turn will cause any dependent resources to also be re-run. However, in this code, the null resource 
+"names" does not perform any operations, so the triggers will have no effect
 Study Terragrunt by Gruntwork.io
 
-Terragrunt is a tool that provides additional functionality on top of Terraform. It is used to manage Terraform modules, and to make it easier to collaborate on Terraform projects. Specifically, it allows for remote state management, automatic locking and dependency management, making it easier to manage and organize Terraform codebase. Additionally, it provides some features like "dry-run" which allows to validate the syntax and the execution plan before applying it.
+Terragrunt is a tool that provides additional functionality on top of Terraform. It is used to manage Terraform modules, and to make it easier to collaborate 
+on Terraform projects. Specifically, it allows for remote state management, automatic locking and dependency management, making it easier to manage and 
+organize Terraform codebase. Additionally, it provides some features like "dry-run" which allows to validate the syntax and the execution plan before applying it.
