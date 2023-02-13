@@ -104,7 +104,9 @@ Terraform init
 			1. Initializing the Backend ....
 			2. Initializing provider plugins ...
 			3. Initializing the child modules ...
-[The terraform init command is used to initialize a Terraform working directory. This command is typically run after writing or cloning Terraform configurations in order to download and install any required provider plugins, and to set up the backend for storing state. It is the first command that should be run when starting to use Terraform in a new working directory.
+[The terraform init command is used to initialize a Terraform working directory. This command is typically run after writing or cloning
+Terraform configurations in order to download and install any required provider plugins, and to set up the backend for storing state. 
+It is the first command that should be run when starting to use Terraform in a new working directory.
 ]
 			
 terraform plan 
@@ -159,7 +161,8 @@ Terraform State
 		Instead of keeping state file in local we can keep it in a remote location 
 		such as s3, etcd. 
 		
-[ etcd is a distributed key-value store, which can be used as a database in certain use cases. It is designed for storing configuration data for distributed systems, and it can be used as a centralized store for storing data that needs to be shared across multiple systems or applications. ]
+[ etcd is a distributed key-value store, which can be used as a database in certain use cases. It is designed for storing configuration data for 
+distributed systems, and it can be used as a centralized store for storing data that needs to be shared across multiple systems or applications. ]
 
 Terraform variable and outputs 
 	Local variable 
@@ -236,7 +239,8 @@ Taint
 	This command will list all the resources that are currently in a "tainted" state for a specific module. 
 	Replace "module_name" with the name of the module you want to check.
 	
-  [	In this example, the "aws_instance.example" resource is being marked for recreation. When you run "terraform apply" next time, Terraform will destroy and   	    recreate this instance, while leaving other resources in your infrastructure untouched.
+  [	In this example, the "aws_instance.example" resource is being marked for recreation. When you run "terraform apply" next time, 
+  Terraform will destroy and   	    recreate this instance, while leaving other resources in your infrastructure untouched.
 	
 	You can also use terraform taint -module=MODULE_NAME RESOURCE_ADDRESS to taint a resource that is in a module.
         It's important to note that tainting a resource will not destroy the resource immediately, it will happen only when you run terraform apply next time.  ]
@@ -341,7 +345,8 @@ resource "resource_type" "resource_name" {
   }
 }
 
-The source field is the path to the local file that you want to upload, and the destination field is the path on the remote machine where the file should be uploaded.
+The source field is the path to the local file that you want to upload, and the destination field is the path on the remote machine where the file should
+be uploaded.
 
 You can also use the connection block to specify the connection details for the file provisioner, like so:
 This is useful when the provisioner needs to connect to the remote machine over SSH.
@@ -468,7 +473,8 @@ It is a JSON file where you can assign values to the variables.
 
 It's worth noting that variables defined in tf.vars file will overwrite the default values defined in variables.tf file, if the same variable is defined in both files.
 In summary, variables.tf is used to define the variables and their types, while tf.vars is used to assign values to these variables.
-By separating the definition and the assignment of the variables, it allows to keep the structure of the code more clear and also make it easier to manage the same infrastructure in different environments. ]
+By separating the definition and the assignment of the variables, it allows to keep the structure of the code more clear and also make it easier 
+to manage the same infrastructure in different environments. ]
 
 Terraform refresh 
 	- Terraform refresh will find the updates done in the cloud resources by comparing the changes with state file.	
