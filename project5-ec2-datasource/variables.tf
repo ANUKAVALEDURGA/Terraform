@@ -3,9 +3,9 @@ variable "ec2_ami" {
 }
 
 variable "ec2_instance_type" {
-   default = ""
+   default = "t2.micro"
 }
 
 variable "ec2_pem" {
-   default = ""
+   default = "devopslearning"
 }
